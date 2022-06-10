@@ -92,14 +92,14 @@ def error(mes, ber):
     temp_list = list(mes)
     for v in range(0, len(mes)):
         ran = numpy.random.uniform(0, 1)
-        if ran < ber:           # if random number < Bit Error Rate: an error has occurred
+        if ran < ber:  # if random number < Bit Error Rate: an error has occurred
             if temp_list[v] == '0':
                 temp_list[v] = '1'
             else:
                 temp_list[v] = '0'
 
     temp1 = "".join(temp_list)
-    return int(temp1, 2)
+    return temp1
 
 
 """
@@ -114,48 +114,41 @@ BER = float(input("Give BER (0-1): "))
 
 n = len(P) + k - 1  # -3 because we have 0b for the binary representation
 
-# Lists & error counters initialization
-messages = []
-FCSs = []
-T = []
+# error counters initialization
 errors1 = 0  # errors by bit error rate
 errors2 = 0  # errors noticed by CRC
 
 # Loop for each message
 for i in range(0, num_messages):
 
-    num = random_message(k)  # Creating random message
-    num = num + (n - k) * "0"  # Shifting the random message (n-k) bits to the left
+    message = random_message(k)                 # Creating random message
+    message = message + (n - k) * "0"           # Shifting the random message (n-k) bits to the left
+    fcs = mod2div(message, P)                   # Calculating its FCS
+    t = bin(int(message, 2) + int(fcs, 2))[2:]  # Creating the T messages
 
-    messages.append(num)  # adding it to the messages list
-    fcs = int(mod2div(num, P), 2)  # Calculating its FCS
-    FCSs.append(fcs)  # adding the fcs to the list
-
-    t = bin(int(messages[i], 2) + FCSs[i])[2:]  # Creating the T messages
-    T.append(t)  # Adding the T message to the list
-
-    # print(t)
-
-    # Bit Error Rate
-    tmp = error(T[i], BER)
-    if tmp != int(T[i], 2):
-        T[i] = bin(tmp)[2:]
+    # Bit Error Rate / Transmission Media
+    tmp = error(t, BER)
+    if int(tmp, 2) != int(t, 2):
+        t = tmp
         errors1 = errors1 + 1
 
-    # print(bin(tmp)[2:])
-
     # Receiver
-    if int(mod2div(T[i], P), 2) != 0:
+    if int(mod2div(t, P), 2) != 0:
         errors2 = errors2 + 1
 
-    # print(i)
 
 # printing the results
-print("Errors by Bit Error Rate: " + str(errors1 / num_messages * 100)[:5] + " %")
+print("Errors by Bit Error Rate: " + str(errors1 / num_messages * 100)[:9] + " %")
 if errors1 != 0:
     x = errors2 / errors1 * 100
-    print("Errors found by CRC: " + str(x)[:5] + " %")
+    print("Errors found by CRC (over errors): " + str(x)[:9] + " %")
     y = (errors1 - errors2) / errors1 * 100
-    print("Errors not found by CRC: " + str(y)[:5] + " %")
-print("errors by ber: " + str(errors1))
-print("errors by crc: " + str(errors2))
+    print("Errors not found by CRC (over errors): " + str(y)[:9] + " %")
+    x = errors2 / num_messages * 100
+    print("Errors found by CRC (over total messages): " + str(x)[:9] + " %")
+    y = (errors1 - errors2) / num_messages * 100
+    print("Errors not found by CRC (over total messages): " + str(y)[:9] + " %")
+print("errors by ber (errors1): " + str(errors1))
+print("errors found by crc (errors2): " + str(errors2))
+print("errors not found by crc: " + str(errors1 - errors2))
+
