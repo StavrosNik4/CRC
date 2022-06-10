@@ -1,6 +1,9 @@
-"""
+
 # Returns XOR of 'a' and 'b'
 # (both of same length)
+import random
+
+
 def xor(a, b):
     # initialize result
     result = []
@@ -54,8 +57,36 @@ def mod2div(dividend, divisor):
     checkword = tmp
     return checkword
 
+# Function to create the
+# random binary string
+def random_message(k):
+    # Variable to store the
+    # string
+    key = ""
 
-d = int('1010001101', 2)
+    # Loop to find the string
+    # of desired length
+    for j in range(k):
+        # randint function to generate
+        # 0, 1 randomly and converting
+        # the result into str
+
+        if random.uniform(0, 1) > 0.5:
+            temp = '0'
+        else:
+            temp = '1'
+
+
+        if j == 0 or j == k - 1:
+            temp = '1'
+        # Concatenation the random 0, 1
+        # to the final result
+        key += temp
+    #print(key)
+    return key
+
+
+d = int(random_message(20), 2)
 p = int('110101', 2)
 
 print(bin(d)[2:])
@@ -80,4 +111,3 @@ r1 = int(mod2div(bin(T)[2:], bin(p)[2:]), 2)
 
 print("R: " + bin(r1))
 
-"""
