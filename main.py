@@ -112,7 +112,7 @@ k = int(input("Give size of each message (k): "))
 P = input("Give P (binary): ")
 BER = float(input("Give BER (0-1): "))
 
-n = len(P) + k - 1  # -3 because we have 0b for the binary representation
+n = len(P) + k - 1
 
 # error counters initialization
 errors1 = 0  # errors by bit error rate
